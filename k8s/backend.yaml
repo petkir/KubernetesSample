@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: BackendAPI-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: backend
+      ms: BackendAPI
+  template:
+    metadata:
+      labels:
+        tier: backend
+        ms: BackendAPI
+    spec:
+      containers:
+        - name: BackendAPI-microservice
+          image: pekiaks1.azurecr.io/KubTestBackendAPI:latest
+          env:
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: ai_key
+            - name: ASPNETCORE_URLS
+              value: http://*:8080
+            - name: DbConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: db
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/meta/healthy
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 4
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/meta/ready
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 4
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "64m"
+            limits:
+              memory: "96Mi"
+              cpu: "125m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: FrontendAPI-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: backend
+      ms: FrontendAPI
+  template:
+    metadata:
+      labels:
+        tier: backend
+        ms: FrontendAPI
+    spec:
+      containers:
+        - name: FrontendAPI-microservice
+          image: pekiaks1.azurecr.io/KubTestFrontendAPI:latest
+          env:
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: ai_key
+            - name: ASPNETCORE_URLS
+              value: http://*:8080
+            - name: DbConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: db
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/meta/healthy
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 4
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/meta/ready
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 4
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "64m"
+            limits:
+              memory: "96Mi"
+              cpu: "125m"

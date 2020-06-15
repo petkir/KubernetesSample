@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Identity-server-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ids
+      tier: frontend
+  template:
+    metadata:
+      name: ids
+      labels:
+        app: ids
+        tier: frontend
+    spec:
+      containers:
+        - name: ids
+          image: pekiaks1.azurecr.io/KubTestIdentityServer:latest
+          env:
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: ai_key
+            - name: ASPNETCORE_URLS
+              value: http://*:8080
+            - name: DbConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: db
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "0.2G"
+              cpu: "1"
+            limits:
+              memory: "0.2G"
+              cpu: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: KubTestAdminApp-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: adminapp
+      tier: frontend
+  template:
+    metadata:
+      name: adminapp
+      labels:
+        app: adminapp
+        tier: frontend
+    spec:
+      containers:
+        - name: adminapp
+          image: pekiaks1.azurecr.io/KubTestAdminApp:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "0.2G"
+              cpu: "1"
+            limits:
+              memory: "0.2G"
+              cpu: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: KubTestCMS-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cms
+      tier: frontend
+  template:
+    metadata:
+      name: cms
+      labels:
+        app: cms
+        tier: frontend
+    spec:
+      containers:
+        - name: cms
+          image: pekiaks1.azurecr.io/KubTestCMS:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "0.2G"
+              cpu: "1"
+            limits:
+              memory: "0.2G"
+              cpu: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: KubTestfrontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+      tier: frontend
+  template:
+    metadata:
+      name: frontend
+      labels:
+        app: frontend
+        tier: frontend
+    spec:
+      containers:
+        - name: cms
+          image: pekiaks1.azurecr.io/KubTestfrontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "0.2G"
+              cpu: "1"
+            limits:
+              memory: "0.2G"
+              cpu: "1"
