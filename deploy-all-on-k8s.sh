@@ -2,10 +2,6 @@
 #https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough
 #az aks get-credentials --resource-group AKSPetkir --name AKSpetkir
 
-if [ "$1" = "" ]; then
-    echo -e "Provide a name for the namespace"
-    exit 1
-fi
 # kubectl create secret docker-register yoursecretname --docker-server=jason.azurecr.io/xxxx/test --docker-username={UserName} --docker-password={Password} --docker-email=team@domain.com
 
 
@@ -53,24 +49,17 @@ kubectl apply -f frontend.yaml -n ag1
 echo -e "Watching services..."
 kubectl get svc -w
 
+#cleanup
+# kubectl delete namespaces ag1
+
 ##Single Instance Server
 #kubectl create secret generic mssql --from-literal=SA_PASSWORD="MyC0m9l&xP@ssw0rd" 
 #kubectl apply -f PersistentVolume.yaml
-
 #kubectl describe pvc mssql-data
-
 #kubectl describe pv
-
 ## Single Instnace SQL Server
 #kubectl apply -f mssql.yaml
-
-#kubectl get pod
-
-#kubectl get services 
-
-
 # sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd"
-
 # SQL Availability Group
 # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-availability-group-configure-ha?view=sql-server-ver15
 
