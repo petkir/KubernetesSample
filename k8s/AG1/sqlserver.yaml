@@ -14,7 +14,7 @@ spec:
       requests: {storage: 5Gi}
     storageClass: default
   saPassword:
-    secretKeyRef: {key: sapassword, name: sql-secrets}
+    secretKeyRef: {key: mssql, name: SA_PASSWORD}
   sqlServerContainer: {image: 'mcr.microsoft.com/mssql/server:2019-CTP2.1-ubuntu'}
 ---
 apiVersion: v1
@@ -42,7 +42,7 @@ spec:
       requests: {storage: 5Gi}
     storageClass: default
   saPassword:
-    secretKeyRef: {key: sapassword, name: sql-secrets}
+    secretKeyRef: {key: mssql, name: SA_PASSWORD}
   sqlServerContainer: {image: 'mcr.microsoft.com/mssql/server:2019-CTP2.1-ubuntu'}
 ---
 apiVersion: v1
@@ -70,7 +70,7 @@ spec:
       requests: {storage: 5Gi}
     storageClass: default
   saPassword:
-    secretKeyRef: {key: sapassword, name: sql-secrets}
+    secretKeyRef: {key: mssql, name: SA_PASSWORD}
   sqlServerContainer: {image: 'mcr.microsoft.com/mssql/server:2019-CTP2.1-ubuntu'}
 ---
 apiVersion: v1

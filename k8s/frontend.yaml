@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Identity-server-deployment
+  name: kubtestidentityserver
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ids
@@ -16,8 +16,8 @@ spec:
         tier: frontend
     spec:
       containers:
-        - name: ids
-          image: pekiaks1.azurecr.io/KubTestIdentityServer:latest
+        - name: kubtestidentityserver
+          image: pekiaks1.azurecr.io/kubtestidentityserver:latest
           env:
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
               valueFrom:
@@ -30,9 +30,9 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: backendsecret
-                  key: db
+                  key: identitydb
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           resources:
             requests:
               memory: "0.2G"
@@ -44,9 +44,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: KubTestAdminApp-deployment
+  name: kubtestadminapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: adminapp
@@ -59,8 +59,8 @@ spec:
         tier: frontend
     spec:
       containers:
-        - name: adminapp
-          image: pekiaks1.azurecr.io/KubTestAdminApp:latest
+        - name: kubtestadminapp
+          image: pekiaks1.azurecr.io/kubtestadminapp:latest
           ports:
             - containerPort: 80
           resources:
@@ -74,9 +74,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: KubTestCMS-deployment
+  name: kubtestcms
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: cms
@@ -89,8 +89,21 @@ spec:
         tier: frontend
     spec:
       containers:
-        - name: cms
-          image: pekiaks1.azurecr.io/KubTestCMS:latest
+        - name: kubtestcms
+          image: pekiaks1.azurecr.io/kubtestcms:latest
+          env:
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: ai_key
+            - name: ASPNETCORE_URLS
+              value: http://*:80
+            - name: DbConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecret
+                  key: cmsdb
           ports:
             - containerPort: 80
           resources:
@@ -104,9 +117,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: KubTestfrontend-deployment
+  name: kubtestfrontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -119,8 +132,8 @@ spec:
         tier: frontend
     spec:
       containers:
-        - name: cms
-          image: pekiaks1.azurecr.io/KubTestfrontend:latest
+        - name: kubtestfrontend
+          image: pekiaks1.azurecr.io/kubtestfrontend:latest
           ports:
             - containerPort: 80
           resources:
@@ -130,3 +143,40 @@ spec:
             limits:
               memory: "0.2G"
               cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubtestidentityserver
+spec:
+  selector:
+    app: ids
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubtestadminapp
+spec:
+  selector:
+    app: adminapp
+  ports:
+    - protocol: TCP
+      port: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubtestcms
+spec:
+  selector:
+    app: cms
+  ports:
+    - protocol: TCP
+      port: 80
+  type: LoadBalancer

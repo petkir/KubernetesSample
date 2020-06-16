@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: mssql-deployment
+  name: mssql1
 spec:
   replicas: 1
   template:
@@ -12,7 +12,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: mssql
-        image: mcr.microsoft.com/mssql/server:2019-CU4-ubuntu-16.04
+        image: mcr.microsoft.com/mssql/server:2017-latest
         ports:
         - containerPort: 1433
         env:
@@ -33,11 +33,10 @@ spec:
         persistentVolumeClaim:
           claimName: mssql-data
 ---
-# make SQL Available from Extern normaly No Need
 apiVersion: v1
 kind: Service
 metadata:
-  name: mssql-deployment
+  name: mssql1
 spec:
   selector:
     app: mssql
