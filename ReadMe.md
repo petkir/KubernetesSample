@@ -17,7 +17,7 @@ I love the MS SQL Server and in azure, I use it normally as Service or as Extern
 
 ## Current State
 * All Containers work in AKS
-* Replica is currently set to 1 for the first tests it's ok
+  
 
 # Getting started
 Build Docker Images and push it to Container Registry:
